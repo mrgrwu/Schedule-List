@@ -11,6 +11,7 @@ import UIKit
 class ViewController: UITableViewController {
 
     var itemArray = [Item]()  // Create array of custom Item class objects
+    var numberItemsComplete: Int = 0
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -51,17 +52,14 @@ class ViewController: UITableViewController {
     // Actions to perform when Clear bar button is pressed
     @objc func clearList() {
         itemArray = []
+        numberItemsComplete = 0
         tableView.reloadData()
     }
     
     // Check if all items are marked complete, and provide option to clear list
     func checkAllItemsComplete() {
-        var counter: Int = 0
-        for item in itemArray {
-            if item.complete { counter += 1 }
-        }
-        if counter == itemArray.count {
-            let ac = UIAlertController(title: "Good Job", message: "All items are complete! Do you want to clear the list?", preferredStyle: .alert)
+        if numberItemsComplete == itemArray.count {
+            let ac = UIAlertController(title: "Good Job", message: "Everything is done! Do you want to clear the list?", preferredStyle: .alert)
             let clearAction = UIAlertAction(title: "Clear", style: .default) { (action) in
                 self.clearList()
             }
@@ -88,6 +86,11 @@ class ViewController: UITableViewController {
     // Toggle Item.complete property and list checkmark when row is tapped
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         itemArray[indexPath.row].complete = !itemArray[indexPath.row].complete
+        if itemArray[indexPath.row].complete {
+            numberItemsComplete += 1
+        } else {
+            numberItemsComplete -= 1
+        }
         
         tableView.deselectRow(at: indexPath, animated: true)
         tableView.reloadRows(at: [indexPath], with: .automatic)
@@ -98,6 +101,7 @@ class ViewController: UITableViewController {
     // Make table rows swipable, and define delete action (code snippet from HackingWithSwift.com)
     override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
         if editingStyle == .delete {
+            if itemArray[indexPath.row].complete { numberItemsComplete -= 1 }
             itemArray.remove(at: indexPath.row)
             tableView.deleteRows(at: [indexPath], with: .fade)
         } else if editingStyle == .insert {
