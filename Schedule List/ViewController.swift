@@ -78,7 +78,7 @@ class ViewController: UITableViewController {
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "Item", for: indexPath)
-        cell.textLabel?.text = itemArray[indexPath.row].description
+        cell.textLabel?.text = "\(indexPath.row + 1))  \(itemArray[indexPath.row].description)"
         cell.accessoryType = itemArray[indexPath.row].complete ? .checkmark : .none  // Add checkmark accessory to cell depending on Item.complete property
         return cell
     }
@@ -104,6 +104,7 @@ class ViewController: UITableViewController {
             if itemArray[indexPath.row].complete { numberItemsComplete -= 1 }
             itemArray.remove(at: indexPath.row)
             tableView.deleteRows(at: [indexPath], with: .fade)
+            tableView.reloadData()
         } else if editingStyle == .insert {
             // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view.
         }
