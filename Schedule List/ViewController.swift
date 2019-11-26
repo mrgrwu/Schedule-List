@@ -10,7 +10,7 @@ import UIKit
 
 class ViewController: UITableViewController {
 
-    var itemArray = [Item]()  // Create array of custom Item class objects
+    var itemArray = [Item]()  // Create array of custom Item struct objects
     var numberItemsComplete: Int = 0
     
     override func viewDidLoad() {
@@ -25,7 +25,7 @@ class ViewController: UITableViewController {
     
     // Actions to perform when + (add) bar button is pressed
     @objc func addItem() {
-        let newItem = Item()  // Create new Item object for list
+        var newItem = Item(description: "", complete: false)  // Create new Item object for list
         
         // Create alert controller and Submit, Cancel actions
         let ac = UIAlertController(title: "Add Item", message: nil, preferredStyle: .alert)
@@ -105,8 +105,6 @@ class ViewController: UITableViewController {
             itemArray.remove(at: indexPath.row)
             tableView.deleteRows(at: [indexPath], with: .fade)
             tableView.reloadData()
-        } else if editingStyle == .insert {
-            // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view.
         }
     }
 

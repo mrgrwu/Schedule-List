@@ -8,9 +8,9 @@
 
 import Foundation
 
-// Create class for custom Item list objects
+// Create struct for custom Item list objects
 
-class Item {
-    var description: String = ""
-    var complete: Bool = false
+struct Item {
+    var description: String
+    var complete: Bool
 }
