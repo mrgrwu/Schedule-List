@@ -20,7 +20,14 @@ class ViewController: UITableViewController {
         title = "My Schedule"
         navigationController?.navigationBar.prefersLargeTitles = true
         navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(addItem))
-        navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Clear", style: .plain, target: self, action: #selector(clearList))
+        
+        // Create toolbar item objects
+        let spacer = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)  // flexible spacer "spring"
+        let clear = UIBarButtonItem(title: "Clear", style: .plain, target: self, action: #selector(clearList))
+        let edit = editButtonItem
+        
+        toolbarItems = [clear, spacer, edit]  // Set toolbar items array property
+        navigationController?.isToolbarHidden = false  // Show toolbar
     }
     
     // Actions to perform when + (add) bar button is pressed
@@ -78,7 +85,7 @@ class ViewController: UITableViewController {
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "Item", for: indexPath)
-        cell.textLabel?.text = "\(indexPath.row + 1))  \(itemArray[indexPath.row].description)"
+        cell.textLabel?.text = "- \(itemArray[indexPath.row].description)"
         cell.accessoryType = itemArray[indexPath.row].complete ? .checkmark : .none  // Add checkmark accessory to cell depending on Item.complete property
         return cell
     }
@@ -98,14 +105,23 @@ class ViewController: UITableViewController {
         checkAllItemsComplete()
     }
     
-    // Make table rows swipable, and define delete action (code snippet from HackingWithSwift.com)
+    // Make table rows swipable/edit-deletable, and define delete action (code snippet from HackingWithSwift.com)
     override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
         if editingStyle == .delete {
             if itemArray[indexPath.row].complete { numberItemsComplete -= 1 }
             itemArray.remove(at: indexPath.row)
             tableView.deleteRows(at: [indexPath], with: .fade)
             tableView.reloadData()
+            
+            checkAllItemsComplete()
         }
+    }
+    
+    // Make table rows edit-reorderable, and define data source reorder actions (code info from Ron Mourant, https://medium.com/@ronm333/delete-and-reorder-tableview-rows-ba5900379662
+    override func tableView(_ tableView: UITableView, moveRowAt sourceIndexPath: IndexPath, to destinationIndexPath: IndexPath) {
+        let itemToMove = itemArray[sourceIndexPath.row]
+        itemArray.remove(at: sourceIndexPath.row)
+        itemArray.insert(itemToMove, at: destinationIndexPath.row)
     }
 
 
