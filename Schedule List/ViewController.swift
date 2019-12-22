@@ -23,10 +23,9 @@ class ViewController: UITableViewController {
         
         // Create toolbar item objects
         let spacer = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)  // flexible spacer "spring"
-        let clear = UIBarButtonItem(title: "Clear", style: .plain, target: self, action: #selector(clearList))
         let edit = editButtonItem
         
-        toolbarItems = [clear, spacer, edit]  // Set toolbar items array property
+        toolbarItems = [spacer, edit]  // Set toolbar items array property
         navigationController?.isToolbarHidden = false  // Show toolbar
     }
     
@@ -56,7 +55,7 @@ class ViewController: UITableViewController {
         present(ac, animated: true)
     }
     
-    // Actions to perform when Clear bar button is pressed
+    // Actions to clear list
     @objc func clearList() {
         itemArray = []
         numberItemsComplete = 0
