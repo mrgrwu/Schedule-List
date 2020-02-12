@@ -10,8 +10,22 @@ import UIKit
 
 class ViewController: UITableViewController {
 
-    var itemArray = [Item]()  // Create array of custom Item struct objects
-    var numberItemsComplete: Int = 0
+    // Set up User Defaults and property observers to store data for variables
+    let defaults = UserDefaults.standard
+    
+    var itemArray = [Item]() {  // Create array of custom Item struct objects
+        didSet {
+            let encoder = JSONEncoder()
+            if let encoded = try? encoder.encode(itemArray) {
+                defaults.set(encoded, forKey: "ItemArray")
+            }
+        }
+    }
+    var numberItemsComplete: Int = 0 {
+        didSet {
+            defaults.set(numberItemsComplete, forKey: "NumberItemsComplete")
+        }
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -23,16 +37,24 @@ class ViewController: UITableViewController {
         
         // Create toolbar item objects
         let spacer = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)  // flexible spacer "spring"
+        let clear = UIBarButtonItem(title: "Clear", style: .plain, target: self, action: #selector(clearList))
         let edit = editButtonItem
         
-        toolbarItems = [spacer, edit]  // Set toolbar items array property
+        toolbarItems = [clear, spacer, edit]  // Set toolbar items array property
         navigationController?.isToolbarHidden = false  // Show toolbar
+        
+        // Read User Defaults data for variables if it exists
+        if let encoded = defaults.object(forKey: "ItemArray") as? Data {
+            let decoder = JSONDecoder()
+            if let decoded = try? decoder.decode([Item].self, from: encoded) {
+                itemArray = decoded
+            }
+            numberItemsComplete = defaults.integer(forKey: "NumberItemsComplete")
+        }
     }
     
     // Actions to perform when + (add) bar button is pressed
     @objc func addItem() {
-        var newItem = Item(description: "", complete: false)  // Create new Item object for list
-        
         // Create alert controller and Submit, Cancel actions
         let ac = UIAlertController(title: "Add Item", message: nil, preferredStyle: .alert)
         ac.addTextField()
@@ -40,7 +62,7 @@ class ViewController: UITableViewController {
         let submitAction = UIAlertAction(title: "Submit", style: .default) { [weak self, weak ac] (action) in
             guard let description = ac?.textFields?[0].text else { return }  // Safely unwrap optional text field
             if description != "" {  // If text field was not an empty string:
-                newItem.description = description
+                let newItem = Item(description: description, complete: false)  // Create new Item object for list
                 self?.itemArray.append(newItem)
                 
                 // Insert row at end of table view list and load new item
@@ -57,9 +79,16 @@ class ViewController: UITableViewController {
     
     // Actions to clear list
     @objc func clearList() {
-        itemArray = []
-        numberItemsComplete = 0
-        tableView.reloadData()
+        let ac = UIAlertController(title: "Clear List", message: "Are you sure?", preferredStyle: .alert)
+        let clearAction = UIAlertAction(title: "Clear", style: .destructive) { (action) in
+            self.itemArray = []
+            self.numberItemsComplete = 0
+            self.tableView.reloadData()
+        }
+        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+        ac.addAction(clearAction)
+        ac.addAction(cancelAction)
+        present(ac, animated: true)
     }
     
     // Check if all items are marked complete, and provide option to clear list
@@ -122,7 +151,6 @@ class ViewController: UITableViewController {
         itemArray.remove(at: sourceIndexPath.row)
         itemArray.insert(itemToMove, at: destinationIndexPath.row)
     }
-
 
 }
 

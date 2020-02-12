@@ -10,7 +10,7 @@ import Foundation
 
 // Create struct for custom Item list objects
 
-struct Item {
+struct Item: Codable {
     var description: String
     var complete: Bool
 }
