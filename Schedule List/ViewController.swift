@@ -145,7 +145,7 @@ class ViewController: UITableViewController {
         }
     }
     
-    // Make table rows edit-reorderable, and define data source reorder actions (code info from Ron Mourant, https://medium.com/@ronm333/delete-and-reorder-tableview-rows-ba5900379662
+    // Make table rows edit-reorderable, and define data source reorder actions (code info from Ron Mourant, https://medium.com/@ronm333/delete-and-reorder-tableview-rows-ba5900379662)
     override func tableView(_ tableView: UITableView, moveRowAt sourceIndexPath: IndexPath, to destinationIndexPath: IndexPath) {
         let itemToMove = itemArray[sourceIndexPath.row]
         itemArray.remove(at: sourceIndexPath.row)
